@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.text.DecimalFormat;
 public class BMI {
     public static void calculateBMI(){
         Scanner scanner = new Scanner(System.in);
@@ -14,7 +15,7 @@ public class BMI {
                 throw new Exception("You can't be that tall, can you?");
             }
         }
-        catch( Exception e ){
+        catch ( Exception e ){
             System.out.println("Invalid Input! " + e);
             return;
         }
@@ -26,13 +27,15 @@ public class BMI {
                 throw new Exception("You can't be that heavy, can you?");
             }
         }
-        catch( Exception e ){
+        catch ( Exception e ){
             System.out.println("Invalid Character! " + e);
             return;
         }
 
         double bmi = mass / ( height * height );
 
-        System.out.println("Your BMI is: " + bmi);
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        System.out.println("Your BMI is: " + df.format(bmi));
     }
 }
