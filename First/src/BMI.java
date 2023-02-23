@@ -7,10 +7,10 @@ public class BMI {
         double height;
         double mass;
 
-        System.out.println("Enter height in metres:");
+        System.out.println("Enter height in centimetres:");
 
         try {
-            height = scanner.nextDouble();
+            height = scanner.nextDouble() / 100;
             if( height > 3 ){
                 throw new Exception("You can't be that tall, can you?");
             }
