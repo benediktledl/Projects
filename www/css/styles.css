@@ -1,0 +1,98 @@
+html{
+  font-family: Arial;
+  background-color: #455559;
+  color: white;
+  text-align: center;
+}
+.text-center{
+  text-align: center !important;
+}
+.color-red{
+  color:red;
+}
+.color-lightgreen{
+  color:lightgreen;
+}
+h1{
+}
+header{
+  background: rgb(0,0,0);
+  background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(47,61,64,1) 30%, rgba(47,61,64,1) 100%);
+  text-align: center;
+  padding: 20px;
+}
+.menu{
+  display: flex;
+  justify-content: space-between;
+}
+.logo{
+  font-weight: bold;
+  font-size:3em;
+  text-decoration: none;
+}
+#first{
+  margin-right:5px;
+  padding:2px;
+}
+#second{
+  padding:2px;
+  color:black;
+  background-color:orange;
+  border-radius:5px;
+}
+.menu-logo{
+  padding: 15px;
+  text-align:center;
+}
+.menu-right{
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.container{
+  margin: 0 auto;
+  width: 500px;
+}
+.row{
+  text-align: left;
+}
+.col-3{
+  text-align: right;
+  margin-right: 10px;
+  float:left;
+  width:30%;
+}
+.col-6{
+  width:60%;
+}
+.form{
+  color:black;
+  margin:50px auto;
+  background: rgba(255,255,255,0.7);
+  border:1px solid black;
+  border-radius: 5px;
+}
+article{
+  margin: 0 auto;
+  width: 40%;
+}
+.discount-price{
+  color:green;
+  font-weight:bold;
+}
+.regular-price{
+  text-decoration: line-through;
+  font-weight:bold;
+  color:red;
+}
+a, a:visited{
+  color:unset;
+}
+.userform{
+  padding:20px 0;
+}
+.detailsform{
+  padding:20px 0;
+}
