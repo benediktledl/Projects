@@ -1,7 +1,7 @@
 /**
  * A class representing a motorboat, a type of watercraft.
  */
-public class Motorboat extends MotorizedWatercraft {
+public class Motorboat extends MotorizedWatercraft implements Drivable {
     private boolean hasPropeller;
 
     /**
@@ -23,6 +23,15 @@ public class Motorboat extends MotorizedWatercraft {
      */
     public boolean hasPropeller() {
         return hasPropeller;
+    }
+
+    /**
+     * Drives the motorboat.
+     */
+    @Override
+    public void drive() {
+        System.out.println("The motorboat is being driven.");
+        System.out.println("");
     }
 
     /**

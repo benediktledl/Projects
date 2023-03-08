@@ -1,7 +1,7 @@
 /**
  * An abstract base class for a watercraft.
  */
-public abstract class Watercraft {
+public abstract class Watercraft implements Drivable {
     protected String name;
     protected int length;
 
@@ -39,6 +39,14 @@ public abstract class Watercraft {
      */
     public void setLength(int length) {
         this.length = length;
+    }
+
+    /**
+     * Drives the watercraft.
+     */
+    @Override
+    public void drive() {
+        System.out.println("The watercraft is being driven.");
     }
 
     /**
