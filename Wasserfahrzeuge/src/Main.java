@@ -19,6 +19,8 @@ public class Main {
         watercrafts[2] = l1;
         watercrafts[3] = ms1;
 
+        watercrafts[0].drive();
+
         // Test the watercraft by calling their methods
         for (Watercraft w : watercrafts) {
             System.out.println("Name: " + w.getName());
