@@ -18,7 +18,7 @@ require("includes.php");
       }
 
       self::$result['status'] = true;
-      self::$result['message'] = "username was added";
+      self::$result['message'] = "User was added";
       return self::$result;
 
     }
@@ -57,7 +57,18 @@ require("includes.php");
       $state = $_POST['state'];
       $email = $_POST['email'];
       $mysqli = new mysqli($dbconf['hostname'], $dbconf['username'], $dbconf['password'], $dbconf['dbname']);
-      return $mysqli->query("INSERT INTO `users` (`userid`, `username`, `password`, `fname`, `lname`, `telephone`, `street`, `town`, `zip`, `state`, `email`) VALUES (NULL, '$username', '$password_hash', '$fname', '$lname', '$telephone', '$street', '$town', '$zip', '$state', '$email') ");
+
+      if($mysqli->query("INSERT INTO `users` (`userid`, `username`, `password`) VALUES (NULL, '$username', '$password_hash') ")){
+        $user_id = $mysqli->insert_id;
+        $pic = bin2hex(file_get_contents($_FILES['pic']['tmp_name']));
+        unlink($_FILES['pic']['tmp_name']);
+        $mysqli->query("INSERT INTO `usermeta` (`userid`, `email`, `fname`, `lname`, `tel`, `street`, `plz`, `countrycode`, `pic`) VALUES ('$user_id', '$email', '$fname', '$lname', '$telephone', '$street', '$zip', 'AUT', '$pic')");
+        $towns = $mysqli->query("SELECT * from towns WHERE plz =\"$zip\"");
+        if( $towns->num_rows === 0 ) {
+          $mysqli->query("INSERT INTO `towns` (`plz`, `town`, `city`, `countrycode`) VALUES ('$zip', '$town', '$state', 'AUT') ");
+        }
+      }
+      return true;
     }
   }
   $user = new registerUser;

@@ -6,7 +6,7 @@ include_once("html_head.html");
 <?php
 include_once("html_navbar.php");
 ?>
-<form id="form" action="registration.php" method="POST">
+<form id="form" action="registration.php" method="POST" enctype="multipart/form-data">
   <h2>Benutzer registrieren</h2>
   <div class="container form userform">
     <div class="row">
@@ -66,6 +66,10 @@ include_once("html_navbar.php");
         <option value="Wien">Wien</option>
       </select>
     </div>
+    <div class="row">
+      <label class="col-3" for="file">Profilbild</label>
+      <input required class="col-6" name="pic" type="file">
+    </div>
   </div>
   <div class="row text-center">
     <input type="submit" value="Registrieren">
@@ -84,7 +88,7 @@ include_once("html_navbar.php");
 
     var form = $(this);
     var actionUrl = form.attr('action');
-    var data = form.serialize();
+    var data = new FormData(this);
     if($('#Passwort').val() !== $('#Passwort2').val()){
       alert("Passwörter stimmen nicht überein!");
       return;
@@ -106,16 +110,17 @@ include_once("html_navbar.php");
           alert("Something went wrong!");
         }
       },
+      error: function(jqXHR, textStatus, errorThrown) {
+        // handle error response
+        console.log(errorThrown);
+      },
+      cache: false,
+      contentType: false,
+      processData: false
     });
   });
 </script>
 
-<!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
-<script>
-  window.ga = function () { ga.q.push(arguments) }; ga.q = []; ga.l = +new Date;
-  ga('create', 'UA-XXXXX-Y', 'auto'); ga('set', 'anonymizeIp', true); ga('set', 'transport', 'beacon'); ga('send', 'pageview')
-</script>
-<script src="https://www.google-analytics.com/analytics.js" async></script>
 </body>
 
 </html>
