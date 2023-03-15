@@ -85,10 +85,12 @@ public class Main {
                             System.out.println("Continuing...");
                             break;
                     }
+                    // TODO: ADD TO watercrafts ARRAY
                     break;
                 case 3:
                     // Delete watercraft
                     System.out.println("Which watercraft do you want to destroy?");
+                    // TODO: DELETE WATERCRAFT
                     break;
                 case 4:
                     // Quit
