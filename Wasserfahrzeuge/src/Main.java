@@ -5,7 +5,7 @@ import java.util.Scanner;
  */
 public class Main {
     public static void main(String[] args) {
-        Watercraft[] watercrafts = new Watercraft[10];
+        Watercraft[] watercrafts = new Watercraft[4];
         Scanner scanner = new Scanner(System.in);
 
         // Create some watercraft
@@ -35,14 +35,17 @@ public class Main {
             int choice = scanner.nextInt();
 
             int horsepower;
+            int i;
 
             switch (choice) {
                 case 1:
                     // List all watercraft
                     for (Watercraft w : watercrafts) {
+                        if(w == null){
+                            continue;
+                        }
                         System.out.println("Name: " + w.getName());
                         System.out.println("Length: " + w.getLength());
-                        System.out.println();
                     }
                     break;
                 case 2:
@@ -82,15 +85,42 @@ public class Main {
                             newWatercraft = new Liner(name, length, horsepower, maxDepth);
                             break;
                         default:
+                            newWatercraft = null;
                             System.out.println("Continuing...");
                             break;
                     }
-                    // TODO: ADD TO watercrafts ARRAY
+                    // ADD TO watercrafts ARRAY
+                    i = 0;
+                    boolean didAction = false;
+                    for (Watercraft w : watercrafts){
+                        if(w == null){
+                            watercrafts[i] = newWatercraft;
+                            didAction = true;
+                            break;
+                        }
+                        i++;
+                    }
+                    if(!didAction){
+                        // No space in watercrafts array
+                        System.out.println("No more slots left, couldn't add element");
+                        newWatercraft = null;
+                    }
                     break;
                 case 3:
                     // Delete watercraft
                     System.out.println("Which watercraft do you want to destroy?");
-                    // TODO: DELETE WATERCRAFT
+                    i = 0;
+                    for (Watercraft w : watercrafts) {
+                        if(w == null){
+                            continue;
+                        }
+                        System.out.println("Name: " + w.getName());
+                        System.out.println("Id: " + i);
+                        i++;
+                    }
+                    int id = scanner.nextInt();
+                    watercrafts[id] = null;
+
                     break;
                 case 4:
                     // Quit
