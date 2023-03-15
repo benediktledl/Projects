@@ -1,7 +1,7 @@
 /**
  * A class representing a motorboat, a type of watercraft.
  */
-public class Motorboat extends MotorizedWatercraft implements Drivable {
+public class Motorboat extends MotorizedWatercraft implements Buyable {
     private boolean hasPropeller;
 
     /**
@@ -11,10 +11,17 @@ public class Motorboat extends MotorizedWatercraft implements Drivable {
      * @param length the length of the motorboat in feet
      * @param horsepower the horsepower of the motorboat
      */
+
+
     public Motorboat(String name, int length, int horsepower) {
         super(name, length, horsepower);
         this.hasPropeller = true;
     }
+
+    public String getName() {
+        return name + this.advertise();
+    }
+
 
     /**
      * Returns whether the motorboat has a propeller or not.
@@ -26,12 +33,11 @@ public class Motorboat extends MotorizedWatercraft implements Drivable {
     }
 
     /**
-     * Drives the motorboat.
+     * Override of Buyable interface
      */
     @Override
-    public void drive() {
-        System.out.println("The motorboat is being driven.");
-        System.out.println("");
+    public String advertise() {
+        return " This motorboat can be bought!";
     }
 
     /**

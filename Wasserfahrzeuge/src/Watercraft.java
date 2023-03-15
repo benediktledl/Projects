@@ -1,7 +1,7 @@
 /**
  * An abstract base class for a watercraft.
  */
-public abstract class Watercraft implements Drivable {
+public abstract class Watercraft implements Buyable {
     protected String name;
     protected int length;
 
@@ -42,11 +42,11 @@ public abstract class Watercraft implements Drivable {
     }
 
     /**
-     * Drives the watercraft.
+     * Override of Buyable interface
      */
     @Override
-    public void drive() {
-        System.out.println("The watercraft is being driven.");
+    public String advertise() {
+        return " This watercraft can be bought";
     }
 
     /**
