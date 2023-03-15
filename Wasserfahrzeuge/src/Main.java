@@ -91,16 +91,16 @@ public class Main {
                     }
                     // ADD TO watercrafts ARRAY
                     i = 0;
-                    boolean didAction = false;
+                    boolean couldAddToArray = false;
                     for (Watercraft w : watercrafts){
                         if(w == null){
                             watercrafts[i] = newWatercraft;
-                            didAction = true;
+                            couldAddToArray = true;
                             break;
                         }
                         i++;
                     }
-                    if(!didAction){
+                    if(!couldAddToArray){
                         // No space in watercrafts array
                         System.out.println("No more slots left, couldn't add element");
                         newWatercraft = null;
