@@ -1,9 +1,12 @@
+import java.util.Scanner;
+
 /**
  * A testing class for the Watercraft hierarchy.
  */
 public class Main {
     public static void main(String[] args) {
-        Watercraft[] watercrafts = new Watercraft[4];
+        Watercraft[] watercrafts = new Watercraft[10];
+        Scanner scanner = new Scanner(System.in);
 
         // Create some watercraft
         Motorboat mb1 = new Motorboat("MB-1", 20, 50);
@@ -19,30 +22,83 @@ public class Main {
         watercrafts[2] = l1;
         watercrafts[3] = ms1;
 
-        watercrafts[0].drive();
+        boolean quit = false;
+        while (!quit) {
+            // Print menu
+            System.out.println("Watercraft Management Menu:");
+            System.out.println("1. List all watercraft");
+            System.out.println("2. Create new watercraft");
+            System.out.println("3. Delete watercraft");
+            System.out.println("4. Quit");
 
-        // Test the watercraft by calling their methods
-        for (Watercraft w : watercrafts) {
-            System.out.println("Name: " + w.getName());
-            System.out.println("Length: " + w.getLength());
-            w.move();
-            System.out.println();
+            // Get user input
+            int choice = scanner.nextInt();
+
+            int horsepower;
+
+            switch (choice) {
+                case 1:
+                    // List all watercraft
+                    for (Watercraft w : watercrafts) {
+                        System.out.println("Name: " + w.getName());
+                        System.out.println("Length: " + w.getLength());
+                        System.out.println();
+                    }
+                    break;
+                case 2:
+                    // Create new watercraft
+                    System.out.println("Enter the type of watercraft (1. Motorboat, 2. PedalBoat, 3. Liner, 4. MiniSubmarine):");
+                    int type = scanner.nextInt();
+                    System.out.println("Enter the name of the watercraft:");
+                    String name = scanner.next();
+                    System.out.println("Enter the length of the watercraft:");
+                    int length = scanner.nextInt();
+                    Watercraft newWatercraft;
+                    switch (type) {
+                        case 1:
+                            System.out.println("Enter the horsepower of the motorboat:");
+                            horsepower = scanner.nextInt();
+                            newWatercraft = new Motorboat(name, length, horsepower);
+                            break;
+                        case 2:
+                            System.out.println("Enter whether the pedal boat has a canopy (true or false):");
+                            boolean hasCanopy = scanner.nextBoolean();
+                            System.out.println("Enter the number of seats on the pedal boat:");
+                            int numSeats = scanner.nextInt();
+                            newWatercraft = new PedalBoat(name, length, hasCanopy, numSeats);
+                            break;
+                        case 3:
+                            System.out.println("Enter the number of passengers on the liner:");
+                            int numPassengers = scanner.nextInt();
+                            System.out.println("Enter the maximum speed of the liner:");
+                            int maxSpeed = scanner.nextInt();
+                            newWatercraft = new Liner(name, length, numPassengers, maxSpeed);
+                            break;
+                        case 4:
+                            System.out.println("Enter the horsepower of the mini-submarine:");
+                            horsepower = scanner.nextInt();
+                            System.out.println("Enter the max-depth of the mini-submarine:");
+                            int maxDepth = scanner.nextInt();
+                            newWatercraft = new Liner(name, length, horsepower, maxDepth);
+                            break;
+                        default:
+                            System.out.println("Continuing...");
+                            break;
+                    }
+                    break;
+                case 3:
+                    // Delete watercraft
+                    System.out.println("Which watercraft do you want to destroy?");
+                    break;
+                case 4:
+                    // Quit
+                    quit = true;
+                    break;
+                default:
+                    // Invalid
+                    System.out.println("Invalid action");
+                    break;
+            }
         }
-
-        // Test specific methods of the motorboats
-        System.out.println("MB-1 horsepower: " + mb1.getHorsepower());
-        mb1.increaseHorsepower(10);
-        System.out.println("MB-1 Upgrading Motorboat 1, new Horsepower: " + mb1.getHorsepower());
-        System.out.println("MB-2 property hasPropeller: " + mb2.hasPropeller());
-        mb2.setHasPropeller(true);
-        System.out.println("MB-2 removing Propeller, hasPropeller: " + mb2.hasPropeller());
-
-        // Test specific methods of the pedal boats
-        System.out.println("PB-1 property hasCanopy: " + pb1.getHasCanopy());
-        pb1.setHasCanopy(false);
-        System.out.println("PB-1 removing Canopy, hasCanopy: " + pb1.getHasCanopy());
-        System.out.println("PB-2 number of seats:" + pb2.getNumSeats());
-        pb2.setNumSeats(2);
-        System.out.println("PB-2 modifying PedalBoat, seats: " + pb2.getNumSeats());
     }
 }
