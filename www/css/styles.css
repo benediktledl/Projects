@@ -13,6 +13,16 @@ html{
 .color-lightgreen{
   color:lightgreen;
 }
+.remind{
+  text-decoration: underline;
+}
+.remind:hover{
+  cursor:pointer;
+}
+#remind{
+  display:none;
+  max-width:200px;
+}
 h1{
 }
 header{

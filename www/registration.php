@@ -34,7 +34,7 @@ require("includes.php");
       }
       return false;
     }
-    private function checkPasswordStrength($password){
+    public static function checkPasswordStrength($password){
       $password_regex = "/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/";
       if(!preg_match($password_regex, $password)){
         self::$result['message'] = "Password too weak!";
@@ -71,6 +71,8 @@ require("includes.php");
       return true;
     }
   }
-  $user = new registerUser;
-  $result = $user -> registerUser($_POST['username'], $_POST['password']);
-  echo json_encode($result);
+  #if(isset($_POST['action']) && $_POST['action'] == "register"){
+    $user = new registerUser;
+    $result = $user -> registerUser($_POST['username'], $_POST['password']);
+    echo json_encode($result);
+  #}

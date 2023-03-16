@@ -16,6 +16,14 @@ include_once("html_navbar.php");
   if(isset($_GET['logout'])){
     echo'<p class="color-lightgreen">Erfolgreich ausgeloggt</p>';
   }
+  if(isset($_GET['remind'])){
+    if($_GET['remind'] == 1){
+      echo'<p class="color-lightgreen">Eine Email zum Zurücksetzen des Passwortes wurde geschickt</p>';
+    }
+    if($_GET['remind'] == "user"){
+      echo '<p class="color-red">Falscher Benutzername</p>';
+    }
+  }
   if(isset($_GET['session']) && $_GET['session']=="expired"){
     echo '<p class="color-red">Sitzung abgelaufen</p>';
   }
@@ -34,6 +42,24 @@ include_once("html_navbar.php");
     <input type="hidden" name="action" value="login">
     <input type="submit" value="Anmelden">
   </div>
+</form>
+<form id="password" action="kundenzone.php" method="POST">
+  <input type="hidden" name="action" value="remind">
+  <p class="remind" onclick="remind()">Passwort vergessen?</p>
+  <div id="remind" class="container form">
+    <div class="row">
+      <label class="col-3" for="Username">User</label>
+      <input required class="col-6" type="text" id="Username" name="Username">
+    </div>
+    <div class="row text-center">
+      <input type="submit" value="Passwort zurücksetzen">
+    </div>
+  </div>
+  <script>
+    function remind(){
+      $('#remind').toggle();
+    }
+  </script>
 </form>
 
 <script src="js/vendor/modernizr-3.11.2.min.js"></script>
