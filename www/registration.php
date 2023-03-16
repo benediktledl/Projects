@@ -1,18 +1,21 @@
 <?php
 require("includes.php");
-  class registerUser{
+  class registerUser
+  {
     static $result = array();
-    public function registerUser($username, $password){
 
-      if(!$this->checkUsernameAvailability($username)){
+    public function registerUser($username, $password)
+    {
+
+      if (!$this->checkUsernameAvailability($username)) {
         self::$result['status'] = false;
         return self::$result;
       }
-      if(!$this->checkPasswordStrength($password)){
+      if (!$this->checkPasswordStrength($password)) {
         self::$result['status'] = false;
         return self::$result;
       }
-      if(!$this->addUserToDatabase($username, $password)){
+      if (!$this->addUserToDatabase($username, $password)) {
         self::$result['status'] = false;
         return self::$result;
       }
@@ -22,27 +25,39 @@ require("includes.php");
       return self::$result;
 
     }
-    private function checkUsernameAvailability($username){
+
+    private function checkUsernameAvailability($username)
+    {
       global $dbconf;
       $mysqli = new mysqli($dbconf['hostname'], $dbconf['username'], $dbconf['password'], $dbconf['dbname']);
-      $users = $mysqli->query("SELECT * from users WHERE username =\"$username\"");
-      if( $users->num_rows === 0 ){
+
+      // Prepare the query using a prepared statement
+      $stmt = $mysqli->prepare("SELECT * from users WHERE username = ?");
+      $stmt->bind_param("s", $username);
+      $stmt->execute();
+
+      // Get the results and check if the username is available
+      $users = $stmt->get_result();
+      if ($users->num_rows === 0) {
         return true;
-      }
-      else {
+      } else {
         self::$result['message'] = "Username already taken!";
       }
       return false;
     }
-    public static function checkPasswordStrength($password){
+
+    public static function checkPasswordStrength($password)
+    {
       $password_regex = "/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/";
-      if(!preg_match($password_regex, $password)){
+      if (!preg_match($password_regex, $password)) {
         self::$result['message'] = "Password too weak!";
         return false;
       }
       return true;
     }
-    private function addUserToDatabase($username, $password){
+
+    private function addUserToDatabase($username, $password)
+    {
       global $config;
       global $dbconf;
       $salt = $config['kuzologin']['salt'];
@@ -58,20 +73,31 @@ require("includes.php");
       $email = $_POST['email'];
       $mysqli = new mysqli($dbconf['hostname'], $dbconf['username'], $dbconf['password'], $dbconf['dbname']);
 
-      if($mysqli->query("INSERT INTO `users` (`userid`, `username`, `password`) VALUES (NULL, '$username', '$password_hash') ")){
+      $stmt = $mysqli->prepare("INSERT INTO `users` (`userid`, `username`, `password`) VALUES (NULL, ?, ?)");
+      $stmt->bind_param("ss", $username, $password_hash);
+      if ($stmt->execute()) {
         $user_id = $mysqli->insert_id;
         $pic = bin2hex(file_get_contents($_FILES['pic']['tmp_name']));
         unlink($_FILES['pic']['tmp_name']);
-        $mysqli->query("INSERT INTO `usermeta` (`userid`, `email`, `fname`, `lname`, `tel`, `street`, `plz`, `countrycode`, `pic`) VALUES ('$user_id', '$email', '$fname', '$lname', '$telephone', '$street', '$zip', 'AUT', '$pic')");
-        $towns = $mysqli->query("SELECT * from towns WHERE plz =\"$zip\"");
-        if( $towns->num_rows === 0 ) {
-          $mysqli->query("INSERT INTO `towns` (`plz`, `town`, `city`, `countrycode`) VALUES ('$zip', '$town', '$state', 'AUT') ");
+        $stmt = $mysqli->prepare("INSERT INTO `usermeta` (`userid`, `email`, `fname`, `lname`, `tel`, `street`, `plz`, `countrycode`, `pic`) VALUES (?, ?, ?, ?, ?, ?, ?, 'AUT', ?)");
+        $stmt->bind_param("isssssss", $user_id, $email, $fname, $lname, $telephone, $street, $zip, $pic);
+        $stmt->execute();
+
+        $stmt = $mysqli->prepare("SELECT * from towns WHERE plz = ?");
+        $stmt->bind_param("s", $zip);
+        $stmt->execute();
+        $towns = $stmt->get_result();
+        if ($towns->num_rows === 0) {
+          $stmt = $mysqli->prepare("INSERT INTO `towns` (`plz`, `town`, `city`, `countrycode`) VALUES (?, ?, ?, 'AUT')");
+          $stmt->bind_param("sss", $zip, $town, $state);
+          $stmt->execute();
         }
       }
       return true;
     }
   }
-  #if(isset($_POST['action']) && $_POST['action'] == "register"){
+
+    #if(isset($_POST['action']) && $_POST['action'] == "register"){
     $user = new registerUser;
     $result = $user -> registerUser($_POST['username'], $_POST['password']);
     echo json_encode($result);

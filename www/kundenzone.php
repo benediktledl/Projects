@@ -34,7 +34,11 @@ class kundenzone
     $key = $_POST['key'];
     $mysqli = new mysqli($dbconf['hostname'], $dbconf['username'], $dbconf['password'], $dbconf['dbname']);
 
-    $result = $mysqli->query("SELECT * from remind_key_temp WHERE `key`='$key'");
+    $stmt = $mysqli->prepare("SELECT * FROM remind_key_temp WHERE `key` = ?");
+    $stmt->bind_param("s", $key);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
     if ($result->num_rows > 0) {
       $row = $result->fetch_assoc();
       $expDate = strtotime($row['expDate']);
@@ -42,7 +46,7 @@ class kundenzone
         // key is valid
         $email = $row['email'];
         $new_password = $_POST['Passwort'];
-        if (!registerUser->checkPasswordStrength($new_password)) {
+        if (!registerUser::checkPasswordStrength($new_password)) {
           // Password is not strong enough
           // Return an error message or redirect the user
           exit("Password too weak!");
@@ -52,8 +56,10 @@ class kundenzone
         $password_salted = hash_hmac("sha256", $new_password, $salt);
         $password_hash = password_hash($password_salted, PASSWORD_ARGON2ID);
         // Update the password hash for the user
-        $update = $mysqli->query("UPDATE users SET password='$password_hash' WHERE email='$email'");
-        if (!$update) {
+        $stmt = $mysqli->prepare("UPDATE users SET password = ? WHERE email = ?");
+        $stmt->bind_param("ss", $password_hash, $email);
+        $stmt->execute();
+        if ($stmt->affected_rows < 1) {
           // Error updating the password
           // Return an error message or redirect the user
           exit("Error updating password!");
@@ -74,58 +80,101 @@ class kundenzone
     }
   }
 
+
   private function remind(){
     global $dbconf;
     $username = $_POST['Username'];
     $mysqli = new mysqli($dbconf['hostname'], $dbconf['username'], $dbconf['password'], $dbconf['dbname']);
 
     // check if username exists
-    $user = $mysqli->query("SELECT * from users WHERE username =\"$username\"");
-    if ($user->num_rows == 0) {
+    $stmt = $mysqli->prepare("SELECT * from users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows == 0) {
       header("location: login.php?remind=user");
       exit;
     }
-    $user = $user->fetch_assoc();
+    $user = $result->fetch_assoc();
     $userid = $user['userid'];
 
-    $usermeta = $mysqli->query("SELECT * from usermeta WHERE userid =\"$userid\"");
-    $usermeta = $usermeta->fetch_assoc();
+    $stmt = $mysqli->prepare("SELECT * from usermeta WHERE userid = ?");
+    $stmt->bind_param("i", $userid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $usermeta = $result->fetch_assoc();
     $email = $usermeta['email'];
 
     // check if key already exists for email address
-    $result = $mysqli->query("SELECT * from remind_key_temp WHERE email ='$email'");
+    $stmt = $mysqli->prepare("SELECT * from remind_key_temp WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
     if ($result->num_rows > 0) {
       // key already exists, update it instead of inserting new
       $key = bin2hex(random_bytes(16));
       $expDate = date('Y-m-d H:i:s', strtotime('+30 minutes'));
-      $mysqli->query("UPDATE `remind_key_temp` SET `key`='$key', `expDate`='$expDate' WHERE `email`='$email'");
+      $stmt = $mysqli->prepare("UPDATE `remind_key_temp` SET `key`=?, `expDate`=? WHERE `email`=?");
+      $stmt->bind_param("sss", $key, $expDate, $email);
+      $stmt->execute();
     } else {
       // generate new key and insert into database
       $key = bin2hex(random_bytes(16));
       $expDate = date('Y-m-d H:i:s', strtotime('+30 minutes'));
-      $mysqli->query("INSERT INTO `remind_key_temp` (`email`, `key`, `expDate`) VALUES ('$email', '$key', '$expDate') ");
+      $stmt = $mysqli->prepare("INSERT INTO `remind_key_temp` (`email`, `key`, `expDate`) VALUES (?, ?, ?)");
+      $stmt->bind_param("sss", $email, $key, $expDate);
+      $stmt->execute();
     }
 
     header("location: login.php?remind=1");
     exit;
   }
 
+
   private function updateData(){
-      global $dbconf;
+    global $dbconf;
 
-      $username = $_SESSION['user'];
+    $username = $_SESSION['user'];
+    $mysqli = new mysqli($dbconf['hostname'], $dbconf['username'], $dbconf['password'], $dbconf['dbname']);
 
-      $mysqli = new mysqli($dbconf['hostname'], $dbconf['username'], $dbconf['password'], $dbconf['dbname']);
-      $user = $mysqli->query("SELECT * from users WHERE username =\"$username\"");
-      $user = $user->fetch_assoc();
+    $stmt = $mysqli->prepare("SELECT userid FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-      $userid = $user['userid'];
-      $fname = $_POST['fname'];
-      $lname = $_POST['lname'];
-      $tel = $_POST['phone'];
-      $email = $_POST['email'];
-      $alter = $mysqli->query("UPDATE usermeta SET fname='$fname', lname='$lname', email='$email', tel='$tel'  WHERE userid='$userid'");
+    if ($result->num_rows === 0) {
+      // No user found
+      // Return an error message or redirect the user
+      exit("Error: user not found!");
+    }
+
+    $user = $result->fetch_assoc();
+    $userid = $user['userid'];
+
+    $fname = $_POST['fname'];
+    $lname = $_POST['lname'];
+    $tel = $_POST['phone'];
+    $email = $_POST['email'];
+
+    $stmt = $mysqli->prepare("UPDATE usermeta SET fname=?, lname=?, email=?, tel=? WHERE userid=?");
+    $stmt->bind_param("ssssi", $fname, $lname, $email, $tel, $userid);
+    $result = $stmt->execute();
+
+    if (!$result) {
+      // Error updating user data
+      // Return an error message or redirect the user
+      exit("Error updating user data!");
+    }
+
+    // User data updated successfully
+    // Redirect the user or display a success message
+    header("Location: kundenzone.php");
+    exit;
   }
+
 
   private function initKundenzone(){
     if(!self::checkSession()){
@@ -150,22 +199,32 @@ class kundenzone
   private function renderKuzo($username){
     global $dbconf;
     $mysqli = new mysqli($dbconf['hostname'], $dbconf['username'], $dbconf['password'], $dbconf['dbname']);
-    $user = $mysqli->query("SELECT * from users WHERE username =\"$username\"");
-    $user = $user->fetch_assoc();
+
+    $stmt_user = $mysqli->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt_user->bind_param("s", $username);
+    $stmt_user->execute();
+    $user = $stmt_user->get_result()->fetch_assoc();
+    $stmt_user->close();
 
     $userid = $user['userid'];
 
-    $usermeta = $mysqli->query("SELECT * from usermeta WHERE userid =\"$userid\"");
-    $usermeta = $usermeta->fetch_assoc();
+    $stmt_usermeta = $mysqli->prepare("SELECT * FROM usermeta WHERE userid = ?");
+    $stmt_usermeta->bind_param("i", $userid);
+    $stmt_usermeta->execute();
+    $usermeta = $stmt_usermeta->get_result()->fetch_assoc();
+    $stmt_usermeta->close();
 
     $plz = $usermeta['plz'];
 
-    $townmeta = $mysqli->query("SELECT * from towns WHERE plz =\"$plz\"");
-    $townmeta = $townmeta->fetch_assoc();
+    $stmt_townmeta = $mysqli->prepare("SELECT * FROM towns WHERE plz = ?");
+    $stmt_townmeta->bind_param("s", $plz);
+    $stmt_townmeta->execute();
+    $townmeta = $stmt_townmeta->get_result()->fetch_assoc();
+    $stmt_townmeta->close();
 
     include_once("html_kuzo.php");
-
   }
+
 
   private function checkSession(){
     if(!isset($_SESSION['user'])){

@@ -20,30 +20,34 @@ class kuzologin
 
     $mysqli = new mysqli($dbconf['hostname'], $dbconf['username'], $dbconf['password'], $dbconf['dbname']);
     // Retrieve the user record based on the username
-    $user_query = $mysqli->query("SELECT * FROM users WHERE username = \"$username\"");
+    $stmt = $mysqli->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $user_query = $stmt->get_result();
 
-     if ($user_query->num_rows == 1) {
-       // If the username is correct, retrieve the user's password hash
-       $user = $user_query->fetch_assoc();
-       $password = $user['password'];
-        // Verify the password
-       if (password_verify($password_salted, $password)) {
-         // Password is correct, user is authenticated
-         session_start();
-         $_SESSION['user'] = $username;
-         self::$result['status'] = true;
-         self::$result['message'] = "successfully logged in";
-       } else {
+    if ($user_query->num_rows == 1) {
+      // If the username is correct, retrieve the user's password hash
+      $user = $user_query->fetch_assoc();
+      $password = $user['password'];
+      // Verify the password
+      if (password_verify($password_salted, $password)) {
+        // Password is correct, user is authenticated
+        session_start();
+        $_SESSION['user'] = $username;
+        self::$result['status'] = true;
+        self::$result['message'] = "successfully logged in";
+      } else {
         // Password is incorrect
         self::$result['status'] = false;
         self::$result['message'] = "password incorrect!";
       }
-      } else {
-       self::$result['status'] = false;
-       self::$result['message'] = "user does not exist!";
+    } else {
+      self::$result['status'] = false;
+      self::$result['message'] = "user does not exist!";
     }
     return self::$result;
   }
+
 }
 
 if(isset($_POST['action']) && $_POST['action'] == "login"){
