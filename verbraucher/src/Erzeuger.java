@@ -33,7 +33,8 @@ class Erzeuger implements Runnable {
                     zahlen.add(random.nextInt(101));
                     lock.notifyAll();
                 } else if (!pause) {
-                    System.out.print("Lager voll, Produktion muss manuell gestartet werden.");
+                    System.out.println("Lager voll, Produktion muss manuell gestartet werden.");
+                    System.out.println();
                     pause = true;
                 }
             }

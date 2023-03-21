@@ -5,7 +5,7 @@ import java.io.*;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Drücke die [Enter]-Taste, um die Produktion anzuhalten/fortzusetzen.");
+        System.out.println("Drück die [Enter]-Taste, um die Produktion anzuhalten/fortzusetzen.");
         Vector<Integer> zahlen = new Vector<>();
         Object lock = new Object();
 
