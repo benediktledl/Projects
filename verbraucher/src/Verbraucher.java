@@ -40,7 +40,8 @@ class Verbraucher implements Runnable {
                 int zahl = zahlen.remove(0);
                 System.out.print(zahl + " ");
                 counter++;
-                if (counter % 10 == 0) {
+                if (counter == 10) {
+                    counter = 0;
                     System.out.println();
                 }
             }
