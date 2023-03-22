@@ -9,6 +9,7 @@ class Erzeuger implements Runnable {
     private Object lock;
     private boolean pause;
     private static final int MAX_ZAHLEN = 25;
+    private static final int MIN_ZAHLEN = 3;
 
     /**
      * Erstellt einen neuen Erzeuger.
@@ -33,9 +34,13 @@ class Erzeuger implements Runnable {
                     zahlen.add(random.nextInt(101));
                     lock.notifyAll();
                 } else if (!pause) {
-                    System.out.println("Lager voll, Produktion muss manuell gestartet werden.");
+                    System.out.println("Lager voll, Produktion wird angehalten.");
                     System.out.println();
                     pause = true;
+                } else if (pause && zahlen.size() < MIN_ZAHLEN) {
+                    this.togglePause();
+                    System.out.println("Produziere weiter um Stillstand zuvermeiden.");
+                    System.out.println();
                 }
             }
             try {
