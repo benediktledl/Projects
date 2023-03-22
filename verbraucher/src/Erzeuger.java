@@ -39,7 +39,7 @@ class Erzeuger implements Runnable {
                     pause = true;
                 } else if (pause && zahlen.size() < MIN_ZAHLEN) {
                     this.togglePause();
-                    System.out.println("Produziere weiter um Stillstand zuvermeiden.");
+                    System.out.println("Produziere weiter um Stillstand zu vermeiden.");
                     System.out.println();
                 }
             }
