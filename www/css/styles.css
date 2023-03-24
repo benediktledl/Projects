@@ -1,7 +1,7 @@
 html{
   font-family: Arial;
-  background-color: #455559;
-  color: white;
+  background-color: #e1e1e1;
+  color: black;
   text-align: center;
 }
 .text-center{
@@ -10,8 +10,11 @@ html{
 .color-red{
   color:red;
 }
+.search{
+  width:740px!important;
+}
 .color-lightgreen{
-  color:lightgreen;
+  color:#16aa16;
 }
 .remind{
   text-decoration: underline;
@@ -25,12 +28,27 @@ html{
 }
 h1{
 }
+.flex-wrap{
+  display:flex;
+  flex-wrap:wrap;
+}
+.card{
+  width:350px;
+  color:black;
+  background-color:rgba(218,218,218,0.8);
+  margin:10px;
+  border-radius:5px;
+}
 header{
-  background: rgb(0,0,0);
-  background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(47,61,64,1) 30%, rgba(47,61,64,1) 100%);
+  background: #b5b5b5;
+}
+header a {
   text-align: center;
+  text-decoration: none;
+  font-size:bold;
   padding: 20px;
 }
+
 .menu{
   display: flex;
   justify-content: space-between;
@@ -49,6 +67,12 @@ header{
   color:black;
   background-color:orange;
   border-radius:5px;
+}
+.menu-item{
+  color: #6f6f6f;
+  font-weight:bold;
+  font-size:1.2em;
+  font-family:Arial;
 }
 .menu-logo{
   padding: 15px;
@@ -80,8 +104,8 @@ header{
 .form{
   color:black;
   margin:50px auto;
-  background: rgba(255,255,255,0.7);
-  border:1px solid black;
+  background:#dadada;
+  border:1px solid #aaa;
   border-radius: 5px;
 }
 article{

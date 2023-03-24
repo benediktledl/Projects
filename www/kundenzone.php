@@ -223,6 +223,8 @@ class kundenzone
     $stmt_townmeta->close();
 
     include_once("html_kuzo.php");
+
+    include_once("search_users_form.php");
   }
 
 

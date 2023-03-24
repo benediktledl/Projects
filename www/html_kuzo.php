@@ -19,7 +19,7 @@
       <input required class="col-6" type="tel" id="Phone" pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$" name="phone" value="<?php echo $usermeta['tel']; ?>">
       <input type="hidden" name="action" value="updateData">
     </div>
-    <input type="submit">
+    <input type="submit" value="Daten ändern">
   </div>
 </form>
 

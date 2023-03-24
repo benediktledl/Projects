@@ -75,23 +75,28 @@ require("includes.php");
 
       $stmt = $mysqli->prepare("INSERT INTO `users` (`userid`, `username`, `password`) VALUES (NULL, ?, ?)");
       $stmt->bind_param("ss", $username, $password_hash);
-      if ($stmt->execute()) {
-        $user_id = $mysqli->insert_id;
-        $pic = bin2hex(file_get_contents($_FILES['pic']['tmp_name']));
-        unlink($_FILES['pic']['tmp_name']);
-        $stmt = $mysqli->prepare("INSERT INTO `usermeta` (`userid`, `email`, `fname`, `lname`, `tel`, `street`, `plz`, `countrycode`, `pic`) VALUES (?, ?, ?, ?, ?, ?, ?, 'AUT', ?)");
-        $stmt->bind_param("isssssss", $user_id, $email, $fname, $lname, $telephone, $street, $zip, $pic);
-        $stmt->execute();
+      if (!$stmt->execute()) {
+        return false;
+      }
+      $user_id = $mysqli->insert_id;
+      $pic = bin2hex(file_get_contents($_FILES['pic']['tmp_name']));
+      unlink($_FILES['pic']['tmp_name']);
+      $stmt = $mysqli->prepare("INSERT INTO `usermeta` (`userid`, `email`, `fname`, `lname`, `tel`, `street`, `plz`, `countrycode`, `pic`) VALUES (?, ?, ?, ?, ?, ?, ?, 'AUT', ?)");
+      $stmt->bind_param("isssssss", $user_id, $email, $fname, $lname, $telephone, $street, $zip, $pic);
+      if(!$stmt->execute()){
+        return false;
+      }
 
-        $stmt = $mysqli->prepare("SELECT * from towns WHERE plz = ?");
-        $stmt->bind_param("s", $zip);
+      $stmt = $mysqli->prepare("SELECT * from towns WHERE plz = ?");
+      $stmt->bind_param("s", $zip);
+      if(!$stmt->execute()){
+        return false;
+      }
+      $towns = $stmt->get_result();
+      if ($towns->num_rows === 0) {
+        $stmt = $mysqli->prepare("INSERT INTO `towns` (`plz`, `town`, `city`, `countrycode`) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $zip, $town);
         $stmt->execute();
-        $towns = $stmt->get_result();
-        if ($towns->num_rows === 0) {
-          $stmt = $mysqli->prepare("INSERT INTO `towns` (`plz`, `town`, `city`, `countrycode`) VALUES (?, ?, ?, 'AUT')");
-          $stmt->bind_param("sss", $zip, $town, $state);
-          $stmt->execute();
-        }
       }
       return true;
     }
