@@ -58,7 +58,7 @@ class Erzeuger implements Runnable {
         pause = !pause;
         if(pause) {
             System.out.println("Produktion pausiert");
-        }else{
+        } else {
             System.out.println("Produktion laeuft wieder");
         }
     }
