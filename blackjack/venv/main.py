@@ -30,20 +30,26 @@ class Player:
 
     def zug(self):
         if(getClicks < 2):
+            # user rolled the dice
             self.tmp_punkte = self.tmp_punkte + random.randomint(1,6);
         else:
+            # user double clicked -> skip
             return false;
 
 
 def getClicks():
-    while not GPIO.input(PIN):
+    while not GPIO.input(PIN)
+        # wait for first click
         time.sleep(0.10)
     clicks = 1
     click_time = time.time();
     while time.time() < click_time + 0.5:
+        # check for another click
         time.sleep(0.15)
         if(GPIO.input(PIN)):
-            clicks = clicks + 1;
+            # detected another click
+            clicks = clicks + 1
+            # restart 50ms timer to detect more clicks
             click_time = time.time();
     return clicks
 
@@ -67,6 +73,7 @@ while runden < 3:
     while True:
         wurf = player.zug()
         if not wurf:
+            # player skipped ( 2 click )
             break
         print("Du hast " + wurf + " gewuerfelt!");
         print("Du hast nun " + player.getTmpPunkte() + " Punkte!");
