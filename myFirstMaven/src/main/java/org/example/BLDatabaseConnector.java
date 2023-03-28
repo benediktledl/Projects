@@ -77,8 +77,8 @@ public class BLDatabaseConnector {
             sb.append(values[i]);
         }
         sb.append(")");
-
         String sql = sb.toString();
+        System.out.println(sql);
         logger.info("SQL statement: " + sql); // log the SQL statement
 
         try (PreparedStatement statement = this.connection.prepareStatement(sql)){

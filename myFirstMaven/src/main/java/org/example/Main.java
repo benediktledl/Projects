@@ -52,8 +52,7 @@ public class Main {
                     if (tableOption == 1) {
                         connector.dropTable(tableName);
                     } else if (tableOption == 2) {
-                        // TODO: 13:12:25.108 [main] ERROR org.example.BLDatabaseConnector - Error inserting data: Unknown column 'test' in 'field list'
-                        System.out.println("Gib die Daten ein (kommagetrennt):");
+                        System.out.println("Gib die Daten ein (kommagetrennt, strings in Anfuehrungszeichen):");
                         String data = scanner.next();
                         connector.insertData(tableName, data);
                     } else if (tableOption == 3) {
