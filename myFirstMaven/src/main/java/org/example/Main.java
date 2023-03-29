@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.Scanner;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 
 public class Main {
 
@@ -46,7 +48,8 @@ public class Main {
                     System.out.println("1. Tabelle loeschen");
                     System.out.println("2. Daten einfuegen");
                     System.out.println("3. Tabelle anzeigen");
-                    System.out.println("4. Zurueck");
+                    System.out.println("4. Daten suchen");;
+                    System.out.println("5. Zurueck");
 
                     int tableOption = scanner.nextInt();
                     if (tableOption == 1) {
@@ -59,6 +62,12 @@ public class Main {
                     } else if (tableOption == 3) {
                         connector.showTableData(tableName);
                     } else if (tableOption == 4) {
+                        System.out.println("Gib den Tabellennamen ein:");
+                        String columnName = scanner.next();
+                        System.out.println("Gib den Suchwert ein:");
+                        String username = scanner.next();
+                        connector.searchData(tableName, columnName, username);
+                    } else if (tableOption == 5) {
                         break;
                     } else {
                         System.out.println("Ungueltige Option");

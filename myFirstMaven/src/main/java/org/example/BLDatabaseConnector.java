@@ -1,12 +1,13 @@
 package org.example;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.sql.*;
 
 public class BLDatabaseConnector {
-    private static final Logger logger = LogManager.getLogger(BLDatabaseConnector.class);
+    private static Logger logger = LogManager.getLogger(BLDatabaseConnector.class);
     private Connection connection = null;
 
     public BLDatabaseConnector(String dbhost, String dbname, String dbuser, String password) throws SQLException {
@@ -23,7 +24,7 @@ public class BLDatabaseConnector {
     }
 
     public void createDatabase(String dbName) throws SQLException {
-        String sql = "CREATE DATABASE " + dbName;
+        String sql = "CREATE DATABASE IF NOT EXISTS " + dbName;
         try (Statement statement = this.connection.createStatement()) {
             statement.executeUpdate(sql);
             logger.info("Datenbank " + dbName + " erfolgreich erstellt.");
@@ -47,6 +48,29 @@ public class BLDatabaseConnector {
             throw e;
         }
     }
+
+    public void searchData(String tableName, String columnName, String value) {
+        String sql = "SELECT * FROM " + tableName + " WHERE " + columnName + " = ?";
+        logger.info("SQL statement: " + sql); // log the SQL statement
+
+        try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
+            statement.setString(1, value);
+
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
+                for (int i = 1; i <= columnCount; i++) {
+                    System.out.print(metaData.getColumnName(i) + ": " + resultSet.getString(i) + " ");
+                }
+                System.out.println();
+            }
+        } catch (SQLException e) {
+            logger.error("Error searching for data: " + e.getMessage());
+        }
+    }
+
+
 
     public void createTable(String tableName, String columns, String types) throws SQLException {
         String sql = "CREATE TABLE ? (?)";
