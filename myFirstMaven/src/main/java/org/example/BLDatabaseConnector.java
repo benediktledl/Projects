@@ -27,8 +27,10 @@ public class BLDatabaseConnector {
         try (Statement statement = this.connection.createStatement()) {
             statement.executeUpdate(sql);
             logger.info("Datenbank " + dbName + " erfolgreich erstellt.");
+            System.out.println("Datenbank " + dbName + " erfolgreich erstellt.");
         } catch (SQLException e) {
             logger.error("Fehler beim Erstellen der Datenbank " + dbName + ": " + e.getMessage());
+            System.out.println("Fehler beim Erstellen der Datenbank " + dbName + ": " + e.getMessage());
             throw e;
         }
     }
@@ -37,20 +39,26 @@ public class BLDatabaseConnector {
         String sql = "DROP DATABASE IF EXISTS " + dbName;
         try (Statement statement = this.connection.createStatement()) {
             statement.executeUpdate(sql);
-            logger.info("Datenbank " + dbName + " erfolgreich geloescht.");
+            logger.info("Datenbank " + dbName + " erfolgreich gelöscht.");
+            System.out.println("Datenbank " + dbName + " erfolgreich gelöscht.");
         } catch (SQLException e) {
-            logger.error("Fehler beim Loeschen der Datenbank " + dbName + ": " + e.getMessage());
+            logger.error("Fehler beim Löschen der Datenbank " + dbName + ": " + e.getMessage());
+            System.out.println("Fehler beim Löschen der Datenbank " + dbName + ": " + e.getMessage());
             throw e;
         }
     }
 
     public void createTable(String tableName, String columns, String types) throws SQLException {
-        String sql = "CREATE TABLE " + tableName + " (" + columns + ")";
-        try (Statement statement = this.connection.createStatement()) {
-            statement.executeUpdate(sql);
+        String sql = "CREATE TABLE ? (?)";
+        try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
+            statement.setString(1, tableName);
+            statement.setString(2, columns + " " + types);
+            statement.executeUpdate();
             logger.info("Tabelle " + tableName + " erfolgreich erstellt.");
+            System.out.println("Tabelle " + tableName + " erfolgreich erstellt.");
         } catch (SQLException e) {
             logger.error("Fehler beim Erstellen der Tabelle " + tableName + ": " + e.getMessage());
+            System.out.println("Fehler beim Erstellen der Tabelle " + tableName + ": " + e.getMessage());
             throw e;
         }
     }
@@ -59,9 +67,11 @@ public class BLDatabaseConnector {
         String sql = "DROP TABLE IF EXISTS " + tableName;
         try (Statement statement = this.connection.createStatement()) {
             statement.executeUpdate(sql);
-            logger.info("Tabelle " + tableName + " erfolgreich geloescht.");
+            logger.info("Tabelle " + tableName + " erfolgreich gelöscht.");
+            System.out.println("Tabelle " + tableName + " erfolgreich gelöscht.");
         } catch (SQLException e) {
-            logger.error("Fehler beim Loeschen der Tabelle " + tableName + ": " + e.getMessage());
+            logger.error("Fehler beim Löschen der Tabelle " + tableName + ": " + e.getMessage());
+            System.out.println("Fehler beim Löschen der Tabelle " + tableName + ": " + e.getMessage());
             throw e;
         }
     }
@@ -71,31 +81,57 @@ public class BLDatabaseConnector {
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO ").append(tableName).append(" VALUES (");
         for (int i = 0; i < values.length; i++) {
+            String value = values[i].trim();
+            if (value.startsWith("\"") && value.endsWith("\"")) {
+                value = value.substring(1, value.length() - 1);
+            } else {
+                try {
+                    Integer.parseInt(value);
+                } catch (NumberFormatException e) {
+                    value = "\"" + value + "\"";
+                }
+            }
             if (i > 0) {
                 sb.append(", ");
             }
-            sb.append(values[i]);
+            sb.append("?");
+            values[i] = value;
         }
         sb.append(")");
         String sql = sb.toString();
-        System.out.println(sql);
         logger.info("SQL statement: " + sql); // log the SQL statement
 
-        try (PreparedStatement statement = this.connection.prepareStatement(sql)){
-            statement.executeUpdate();
-            logger.info("Data inserted successfully");
+        try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
+            for (int i = 0; i < values.length; i++) {
+                String value = values[i].trim();
+                if (value.startsWith("\"") && value.endsWith("\"")) {
+                    value = value.substring(1, value.length() - 1);
+                    statement.setString(i + 1, value);
+                } else {
+                    statement.setInt(i + 1, Integer.parseInt(value));
+                }
+            }
+            int rowsInserted = statement.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("Data inserted successfully");
+                logger.info("Data inserted successfully");
+            } else {
+                System.out.println("Error inserting data: no rows affected");
+                logger.error("Error inserting data: no rows affected");
+            }
         } catch (SQLException e) {
+            System.out.println("Error inserting data: " + e.getMessage());
             logger.error("Error inserting data: " + e.getMessage());
         }
     }
 
     public void showTableData(String tableName) {
-        String sql = "SELECT * FROM " + tableName;
+        String sql = "SELECT * FROM `" + tableName + "`";
         logger.info("SQL statement: " + sql); // log the SQL statement
 
         try (
-             PreparedStatement statement = this.connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()
+                PreparedStatement statement = this.connection.prepareStatement(sql);
+                ResultSet resultSet = statement.executeQuery()
         ) {
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();

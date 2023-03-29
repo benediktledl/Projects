@@ -51,8 +51,9 @@ public class Main {
                     int tableOption = scanner.nextInt();
                     if (tableOption == 1) {
                         connector.dropTable(tableName);
+                        break;
                     } else if (tableOption == 2) {
-                        System.out.println("Gib die Daten ein (kommagetrennt, strings in Anfuehrungszeichen):");
+                        System.out.println("Gib die Daten ein (kommagetrennt):");
                         String data = scanner.next();
                         connector.insertData(tableName, data);
                     } else if (tableOption == 3) {
