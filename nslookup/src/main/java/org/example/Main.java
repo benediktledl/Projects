@@ -6,19 +6,21 @@ public class Main {
         System.out.println("NSLOOKUP\n");
         while(true) {
             Scanner sc = new Scanner(System.in);
-            System.out.println("Enter hostname or IP-address");
+            System.out.println("Enter hostname or IP-address, multiple seperated with space");
             String input = sc.nextLine();
 
             if(input.contains(" ")){
-                input.split(" ");
-                for(int i = 0; i< input.split(" ").length; i++){
+                String[] inputarray = input.split(" ");
+
+                for(int i = 0; i< inputarray.length; i++){
                     try {
-                        System.out.println(nslookup.nslookup(input.split(" ")[i]));
+                        System.out.println(nslookup.nslookup(inputarray[i]));
                     } catch (Exception e) {
                         System.out.println("Error: " + e);
                     }
                     System.out.println("");
                 }
+
                 continue;
             }
 

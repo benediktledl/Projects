@@ -15,7 +15,7 @@ public class nslookup {
         if(isIpAddress(input)){
             InetAddress ia = InetAddress.getByName(input);
 
-            return (ia.getHostName());
+            return (input + "/" + ia.getHostName());
         }
 
         return "Unsupported Format";
