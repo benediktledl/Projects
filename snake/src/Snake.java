@@ -46,7 +46,7 @@ public class Snake extends JPanel implements Runnable, KeyListener {
         createApple();
         dots = 3;
         inGame = true;
-        repaint();
+        //repaint();
     }
 
     private void addFirstDots() {
