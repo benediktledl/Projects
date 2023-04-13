@@ -1,24 +1,26 @@
 package org.example;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.time.LocalDateTime;
-
 public class Message {
     private String code;
-    private String timestamp;
     private String message;
+    private String author;
+    private String timestamp;
 
     public Message() {
     }
 
-    @JsonProperty("code")
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     public String getCode() {
         return this.code;
+    }
+    public String getTimestamp() {
+        return this.timestamp;
+    }
+    public String getMessage() {
+        return this.message;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public void setTimestamp(String timestamp) {

@@ -1,15 +1,10 @@
 package org.example;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class Message {
     private String code;
@@ -27,7 +22,7 @@ public class Message {
 
 
     public String getCode() {
-        return code;
+        return this.code;
     }
 
     public String getTimestamp() {

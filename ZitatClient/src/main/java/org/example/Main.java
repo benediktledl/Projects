@@ -4,14 +4,13 @@ package org.example;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
+import java.net.*;
+import java.time.LocalDateTime;
+import java.util.Scanner;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.Scanner;
 
 public class Main {
     private static final int BUFSIZE = 508;
@@ -35,8 +34,38 @@ public class Main {
                 packet.setData(data);
                 packet.setLength(data.length);
                 socket.send(packet);
+
+                System.out.println("Daten gesendet");
+
+                // Empfangen der Antwort des Servers
+                byte[] responseBuffer = new byte[BUFSIZE];
+                DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
+                socket.setSoTimeout(1000);
+                try {
+                    socket.receive(responsePacket);
+                    String responseMessage = new String(responsePacket.getData(), 0, responsePacket.getLength());
+
+                    // Ausgabe des Zitats
+                    Zitat zitat = deserialize(responseMessage);
+                    System.out.println("Zitat: " + zitat.getZitat());
+                    System.out.println("Author: " + zitat.getAuthor());
+                } catch (SocketTimeoutException e){
+                    System.out.println("Response timeout");
+                    continue;
+                }
             }
         }
+    }
+
+    private static Zitat deserialize(String data) {
+        ObjectMapper mapper = new ObjectMapper();
+        Zitat message = new Zitat();
+        try {
+            message = mapper.readValue(data,Zitat.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return message;
     }
 
     private static String serialize(Message msg) {
@@ -44,7 +73,6 @@ public class Main {
         String json = "";
         try {
             json = mapper.writeValueAsString(msg);
-            System.out.println(json);
             return json;
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -52,4 +80,3 @@ public class Main {
         return json;
     }
 }
-
