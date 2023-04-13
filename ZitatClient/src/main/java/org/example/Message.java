@@ -12,22 +12,22 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class Message {
-    private String user;
+    private String code;
     private String timestamp;
     private String message;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
-    public Message(String user, LocalDateTime timestamp, String message) throws ParseException {
-        this.user = user;
+    public Message(String code, LocalDateTime timestamp, String message) throws ParseException {
+        this.code = code;
         this.timestamp = timestamp.format(formatter);
         this.message = message;
     }
 
 
 
-    public String getUser() {
-        return user;
+    public String getCode() {
+        return code;
     }
 
     public String getTimestamp() {

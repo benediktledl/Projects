@@ -11,6 +11,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Scanner;
 
 public class Main {
     private static final int BUFSIZE = 508;
@@ -18,16 +19,23 @@ public class Main {
     public static void main(String[] args) throws Exception {
         String host = "localhost";
         int port = 50000;
-        Message msg = new Message("LBS4-User", LocalDateTime.now(), "Das ist ein Test.");
-        String message = serialize(msg);
+        Scanner sc = new Scanner(System.in);
+        while(true) {
+            System.out.println("Zugangscode angeben");
+            String code = sc.nextLine();
+            System.out.println("Nachricht eingeben");
+            String nachricht = sc.nextLine();
+            Message msg = new Message(code, LocalDateTime.now(), nachricht);
+            String message = serialize(msg);
 
-        try (DatagramSocket socket = new DatagramSocket()) {
-            InetAddress addr = InetAddress.getByName(host);
-            DatagramPacket packet = new DatagramPacket(new byte[BUFSIZE], BUFSIZE, addr, port);
-            byte[] data = message.getBytes();
-            packet.setData(data);
-            packet.setLength(data.length);
-            socket.send(packet);
+            try (DatagramSocket socket = new DatagramSocket()) {
+                InetAddress addr = InetAddress.getByName(host);
+                DatagramPacket packet = new DatagramPacket(new byte[BUFSIZE], BUFSIZE, addr, port);
+                byte[] data = message.getBytes();
+                packet.setData(data);
+                packet.setLength(data.length);
+                socket.send(packet);
+            }
         }
     }
 

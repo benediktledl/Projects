@@ -15,16 +15,26 @@ public class Main {
 
     public static void main(String[] args) {
         int port = 50000;
+        String code = "geheimcode";
         Message  message = null;
         try (DatagramSocket socket = new DatagramSocket(port)) {
             DatagramPacket packet = new DatagramPacket(new byte[BUFSIZE], BUFSIZE);
+
+            System.out.println("Listening on Port " + port + "...");
 
             while (true) {
                 socket.receive(packet);
                 String data = new String(packet.getData(), 0, packet.getLength());
                 message = deserialize(data);
-                System.out.println("Empfangene Daten: " + data);
-                System.out.println("Daten des neuen Objektes: " + message);
+                if(message.getCode().equals(code)) {
+                    System.out.println("Empfangene Daten: " + message);
+                    System.out.println("Sende Zitat!");
+                    //TODO: zitat senden
+                }else{
+                    System.out.println("Daten nicht genehmigt, falscher Code");
+                    continue;
+                }
+
             }
         } catch (IOException e) {
             System.err.println(e);

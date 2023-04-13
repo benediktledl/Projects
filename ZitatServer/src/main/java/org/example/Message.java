@@ -5,16 +5,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 public class Message {
-    private String user;
+    private String code;
     private String timestamp;
     private String message;
 
     public Message() {
     }
 
-    @JsonProperty("user")
-    public void setUser(String user) {
-        this.user = user;
+    @JsonProperty("code")
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return this.code;
     }
 
     public void setTimestamp(String timestamp) {
@@ -26,7 +30,7 @@ public class Message {
 
     @Override
     public String toString(){
-        return "user : "+user + " timestamp : "+timestamp + " message : "+message;
+        return "code : "+code + " timestamp : "+timestamp + " message : "+message;
     }
 
 }
