@@ -1,16 +1,25 @@
 import random
 import time
-import RPi.GPIO
+import RPi.GPIO as GPIO
+
+random.seed(int(time.time()))
 
 PIN = 35
+
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 class Player:
     name = ""
     tmp_punkte = 0
     punkte = 0
+    simulated = False
 
     def getTmpPunkte(self):
         return self.tmp_punkte;
+
+    def reset(self):
+        self.tmp_punkte = 0;
 
     def win(self):
         self.punkte = self.punkte + 1;
@@ -28,28 +37,31 @@ class Player:
     def getName(self):
         return self.name
 
-    def zug(self):
-        if(getClicks < 2):
-            # user rolled the dice
-            self.tmp_punkte = self.tmp_punkte + random.randomint(1,6);
+    def zug(self, auto = False):
+        if(auto or getClicks() < 2):
+            wurf = random.randint(1,6);
+            self.tmp_punkte = self.tmp_punkte + wurf;
+            return wurf;
         else:
-            # user double clicked -> skip
-            return false;
+            return False;
+
+    def simulate(self):
+        self.tmp_punkte = 18;
+        self.simulated = True;
+
+    def isSimulated(self):
+        return self.simulated;
 
 
 def getClicks():
-    while not GPIO.input(PIN)
-        # wait for first click
+    while GPIO.input(PIN) == 1:
         time.sleep(0.10)
     clicks = 1
     click_time = time.time();
-    while time.time() < click_time + 0.5:
-        # check for another click
+    while time.time() < click_time + 0.7:
         time.sleep(0.15)
-        if(GPIO.input(PIN)):
-            # detected another click
-            clicks = clicks + 1
-            # restart 50ms timer to detect more clicks
+        if(GPIO.input(PIN) == 0):
+            clicks = clicks + 1;
             click_time = time.time();
     return clicks
 
@@ -58,52 +70,81 @@ print ("===   Black Jack   ===")
 print ("======================")
 print ("")
 player = Player()
-player.setName()
+player.setName("Player")
 
 computer = Player()
 computer.setName("Computer")
 
 runden = 0
-while runden < 3:
-    skip = false;
+while runden < 100000:
+    skip = False;
     wurf = 0
+    player.reset();
+    player.simulate();
+    computer.reset();
+    if not player.isSimulated():
+        print("");
+        print("Runde beginnt")
+        print("");
 
-    print("Runde beginnt")
-
-    while True:
+    while True and not player.isSimulated():
         wurf = player.zug()
-        if not wurf:
-            # player skipped ( 2 click )
+        if wurf == False:
             break
-        print("Du hast " + wurf + " gewuerfelt!");
-        print("Du hast nun " + player.getTmpPunkte() + " Punkte!");
+        print("Du hast " + str(wurf) + " gewuerfelt!");
+        print("Du hast nun " + str(player.getTmpPunkte()) + " Punkte!");
+        print("");
         if (player.getTmpPunkte() == 21):
             print ("Somit hast du diese Runde gewonnen!");
-            print ("Dein Punktestand: "+player.win());
-            skip = true;
+            print ("Dein Punktestand: " + str(player.win()));
+            skip = True;
             break;
         if (player.getTmpPunkte() > 21):
             print ("Somit hast du diese Runde verloren!");
-            skip = true;
+            print("Punktestand vom Computer: " + str(computer.win()));
+            skip = True;
             break;
 
-    print("Computer ist dran");
+    if not skip and not player.isSimulated():
+        print("");
+        print("Computer ist dran");
+        print("");
 
     while(computer.getTmpPunkte() <= player.getTmpPunkte() and not skip):
-        wurf = computer.zug();
-        tmp_punkte = computer.getTmpPunkte();
-        print ("Der Computer hat " + wurf + " gewuerfelt!");
-        print ("Der Computer hat nun " + tmp_punkte + " Punkte!");
-        if(tmp_punkte > 21):
-            print ("Somit hat der Computer verloren");
-            print("Dein Punktestand: " + player.win());
-            break;
-        if(tmp_punkte > player.getTmpPunkte()):
-            print ("Somit hat der Computer gewonnen");
-            print("Punktestand vom Computer: "+ computer.win());
-    runden = runde + 1;
+        if ( not player.isSimulated()):
+            time.sleep(2);
+            wurf = computer.zug(True);
+            tmp_punkte = computer.getTmpPunkte();
+            print ("Der Computer hat " + str(wurf) + " gewuerfelt!");
+            print ("Der Computer hat nun " + str(tmp_punkte) + " Punkte!");
+            print ("");
+            if(tmp_punkte > 21):
+                print ("Somit hat der Computer verloren");
+                print("Dein Punktestand: " + str(player.win()));
+                break;
+            if(tmp_punkte > player.getTmpPunkte()):
+                print ("Somit hat der Computer gewonnen");
+                print("Punktestand vom Computer: " + str(computer.win()));
+        else:
+            wurf = computer.zug(True);
+            tmp_punkte = computer.getTmpPunkte();
+            if(tmp_punkte > 21):
+                player.win();
+                break;
+            if(tmp_punkte > player.getTmpPunkte()):
+                computer.win();
+                break;
+    runden = runden + 1;
+
+    skip = False;
+
 
 if(computer.getPoints() > player.getPoints()):
-    print ("Der Computer hat mit " + computer.getPoints() + " gewonnen!");
+    print ("");
+    print ("Der Computer hat mit " + str(computer.getPoints()) + " Runden gewonnen!");
+elif(computer.getPoints() < player.getPoints()):
+    print ("");
+    print ("Du hast mit " + str(player.getPoints()) + " Runden gewonnen!");
 else:
-    print ("Du hast mit " + player.getPoints() + " gewonnen!");
+    print("")
+    print ("Unentschieden, jeder hat " + str(player.getPoints()) + " Runden gewonnen!");
